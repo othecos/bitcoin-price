@@ -2,8 +2,6 @@
 
 A real-time Bitcoin price tracking application built with Next.js and Express. The application displays current Bitcoin prices, historical data through interactive charts, and provides a Bitcoin/USD calculator.
 
-## Project Structure
-
 ## Features
 
 - Real-time Bitcoin price updates using WebSocket
