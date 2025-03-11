@@ -5,9 +5,9 @@ import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 import { AppDataSource } from "./data-source";
-import { bitcoinRoutes, BitcoinService } from "./modules/bitcon";
+import { createBitcoinRoutes } from "./modules/bitcon/bitcoin.routes";
+import { BitcoinFactory } from "./modules/bitcon/bitcoin.factory";
 import { BitcoinPrice } from "./entities/BitcoinPrice";
-import { BinanceGateway } from "./modules/bitcon/gateways/binance.gateway";
 
 // Load environment variables
 dotenv.config();
@@ -21,9 +21,6 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use("/api/bitcoin", bitcoinRoutes);
-
 // Create HTTP server
 const server = http.createServer(app);
 
@@ -32,7 +29,6 @@ const io = new Server(server, {
   cors: {
     // eslint-disable-next-line turbo/no-undeclared-env-vars
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
-    methods: ["GET", "POST"],
   },
 });
 
@@ -45,26 +41,24 @@ io.on("connection", (socket) => {
   });
 });
 
-// Initialize database and start server
-AppDataSource.initialize()
-  .then(() => {
-    console.log("Database initialized");
+const bootstrap = async () => {
+  // Intialize database prior to starting the server
+  await AppDataSource.initialize();
 
-    // Start the server
-    server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+  // Setup dependencies
+  const repository = AppDataSource.getRepository(BitcoinPrice);
+  const bitcoinService = BitcoinFactory.createService(repository);
 
-      const bitcoinPriceRepository = AppDataSource.getRepository(BitcoinPrice);
-      // Create an instance of BitcoinService
-      const bitcoinService = new BitcoinService(
-        bitcoinPriceRepository,
-        new BinanceGateway()
-      );
+  // Setup routes
+  app.use("/api/bitcoin", createBitcoinRoutes({ service: bitcoinService }));
 
-      // Setup Bitcoin price updates
-      bitcoinService.setupBitcoinPriceUpdates(io);
-    });
-  })
-  .catch((error) => {
-    console.error("Error initializing database:", error);
+  // Setup Bitcoin price updates
+  bitcoinService.setupBitcoinPriceUpdates(io);
+
+  // Start the server
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
+};
+
+bootstrap().catch(console.error);

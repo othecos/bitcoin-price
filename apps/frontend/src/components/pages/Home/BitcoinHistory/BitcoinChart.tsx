@@ -1,41 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
-import * as d3 from "d3";
 import { formatMoneyAmount } from "@/services/price";
-import { BitcoinHistoryData, BitcoinService } from "@/services/bitcoin";
-import { WarningIcon } from "@/icons/warning";
-import { Tooltip } from "@/components/base/Tooltip";
+import { useEffect, useRef } from "react";
+import * as d3 from "d3";
 
-interface BitcoinHistoryProps {
-  isInModal?: boolean;
-}
-
-export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
+export const BitcoinChart = ({
+  data,
+  width,
+  height,
+  error,
+}: {
+  data: any[];
+  width: number;
+  height: number;
+  error: boolean;
+}) => {
   const chartRef = useRef<SVGSVGElement>(null);
-  const fetchBitcoinHistory = async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/bitcoin/history`
-    );
-    const data = await response.json();
-    if (data.length > 0) {
-      BitcoinService.setBitcoinHistoryInLocalStorage(data);
-    }
-    return data;
-  };
-  const { data, isLoading, error, isFetched } = useQuery<
-    BitcoinHistoryData[],
-    Error
-  >({
-    queryKey: ["bitcoinHistory"],
-    queryFn: () => fetchBitcoinHistory(),
-    initialData: BitcoinService.getBitcoinHistoryFromLocalStorage(),
-  });
-
   useEffect(() => {
     if (data.length > 0 && chartRef.current) {
       createChart();
     }
-  }, [data, isInModal, error]);
+  }, [data, error, width, height]);
 
   const createChart = () => {
     if (!chartRef.current) return;
@@ -55,14 +38,14 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
     // Set dimensions and margins
     const margin = { top: 20, right: 30, bottom: 50, left: 60 };
     // Adjust width based on whether it's in modal or card
-    const width = (isInModal ? 700 : 500) - margin.left - margin.right;
-    const height = (isInModal ? 400 : 300) - margin.top - margin.bottom;
+    const _width = width - margin.left - margin.right;
+    const _height = height - margin.top - margin.bottom;
 
     // Create SVG
     const svg = d3
       .select(chartRef.current)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+      .attr("width", _width + margin.left + margin.right)
+      .attr("height", _height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -78,7 +61,7 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
     const x = d3
       .scaleTime()
       .domain(d3.extent(parsedData, (d) => d.date) as [Date, Date])
-      .range([0, width]);
+      .range([0, _width]);
 
     const y = d3
       .scaleLinear()
@@ -86,14 +69,14 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
         (d3.min(parsedData, (d) => d.price) ?? 0) * 0.995,
         (d3.max(parsedData, (d) => d.price) ?? 0) * 1.005,
       ])
-      .range([height, 0]);
+      .range([_height, 0]);
 
     const tickCount = Math.min(parsedData.length, 10);
 
     // Add X axis
     svg
       .append("g")
-      .attr("transform", `translate(0,${height})`)
+      .attr("transform", `translate(0,${_height})`)
       .call(
         d3
           .axisBottom(x)
@@ -151,6 +134,7 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
       .style("padding", "8px")
       .style("box-shadow", "0 2px 4px rgba(0,0,0,0.1)")
       .style("pointer-events", "none")
+      .style("z-index", "1000")
       .style("opacity", 0);
 
     svg
@@ -171,31 +155,5 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
         tooltip.style("opacity", 0);
       });
   };
-
-  if (isLoading) {
-    return <div className="text-center py-4">Loading price history...</div>;
-  }
-
-  const messageColor = error ? "text-red-600" : "text-gray-500";
-  return (
-    <div id="bitcoin-history-chart">
-      <svg ref={chartRef} className="w-full"></svg>
-      {isFetched && data.length === 0 && (
-        <div className="text-center py-4">No price history available</div>
-      )}
-      <div
-        className={`flex items-center justify-center gap-2 text-xs text-center ${messageColor}`}
-      >
-        <span>Bitcoin price history over time</span>{" "}
-        {error && (
-          <Tooltip
-            content="Error loading price history. Using local storage as fallback."
-            position="top"
-          >
-            <WarningIcon className="w-4 h-4" />
-          </Tooltip>
-        )}
-      </div>
-    </div>
-  );
+  return <svg ref={chartRef} className="w-full"></svg>;
 };

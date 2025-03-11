@@ -1,16 +1,17 @@
 import { Router } from "express";
-import { BitcoinController } from "./bitcoin.controller";
-import { AppDataSource } from "../../data-source";
-import { BitcoinPrice } from "../../entities/BitcoinPrice";
+import { BitcoinFactory } from "./bitcoin.factory";
+import { BitcoinService } from "./bitcoin.service";
 
-const router = Router();
-const bitcoinController = new BitcoinController(
-  AppDataSource.getRepository(BitcoinPrice)
-);
+export const createBitcoinRoutes = ({
+  service,
+}: {
+  service: BitcoinService;
+}): Router => {
+  const router = Router();
+  const controller = BitcoinFactory.createController(service);
 
-router.get("/price", (req, res) => bitcoinController.getLatestPrice(req, res));
-router.get("/history", (req, res) =>
-  bitcoinController.getPriceHistory(req, res)
-);
+  router.get("/price", (req, res) => controller.getLatestPrice(req, res));
+  router.get("/history", (req, res) => controller.getPriceHistory(req, res));
 
-export const bitcoinRoutes: Router = router;
+  return router;
+};

@@ -7,6 +7,7 @@ export const WarningIcon = ({ className }: { className?: string }) => {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      data-testid="warning-icon"
     >
       <path
         strokeLinecap="round"

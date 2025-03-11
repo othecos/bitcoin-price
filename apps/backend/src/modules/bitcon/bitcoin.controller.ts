@@ -1,18 +1,11 @@
 import { Request, Response } from "express";
-import { BitcoinPriceRepositoryType } from "../../entities/BitcoinPrice";
 import { BitcoinService } from "./bitcoin.service";
-import { BinanceGateway } from "./gateways/binance.gateway";
 
 export class BitcoinController {
-  private bitcoinPriceRepository: BitcoinPriceRepositoryType;
   private bitcoinService: BitcoinService;
 
-  constructor(bitcoinPriceRepository: BitcoinPriceRepositoryType) {
-    this.bitcoinPriceRepository = bitcoinPriceRepository;
-    this.bitcoinService = new BitcoinService(
-      bitcoinPriceRepository,
-      new BinanceGateway()
-    );
+  constructor(bitcoinService: BitcoinService) {
+    this.bitcoinService = bitcoinService;
   }
 
   async getLatestPrice(req: Request, res: Response) {
@@ -22,12 +15,7 @@ export class BitcoinController {
       if (!latestPrice) {
         const currentPrice = await this.bitcoinService.fetchBitcoinPrice();
 
-        const newPrice = this.bitcoinPriceRepository.create({
-          price: currentPrice,
-          currency: "USD",
-        });
-
-        await this.bitcoinPriceRepository.save(newPrice);
+        await this.bitcoinService.saveBitcoinPrice(currentPrice);
 
         return res.json({ price: currentPrice });
       }
@@ -42,10 +30,7 @@ export class BitcoinController {
   async getPriceHistory(req: Request, res: Response) {
     try {
       const { limit = 10 } = req.query;
-      const history = await this.bitcoinPriceRepository.find({
-        order: { timestamp: "DESC" },
-        take: Number(limit),
-      });
+      const history = await this.bitcoinService.getPriceHistory(Number(limit));
 
       return res.json(history);
     } catch (error) {

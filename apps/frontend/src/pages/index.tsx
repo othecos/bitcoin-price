@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Socket } from "socket.io-client";
 import { SocketChannels, useSocketListener } from "@/hooks/useSocketListener";
-import { LocalStorageKeys, LocalStorageService } from "@/services/localstorage";
 import { BitcoinPrice } from "@/components/pages/Home/BitcoinPrice";
 import { BitcoinCalculator } from "@/components/pages/Home/BitcoinCalculator";
 import { CardWithFlip } from "@/components/base/CardWithFlip";
-import { BitcoinHistory } from "@/components/pages/Home/BitcoinHistory";
+import { BitcoinHistory } from "@/components/pages/Home/BitcoinHistory/BitcoinHistory";
 import { BitcoinService } from "@/services/bitcoin";
 import { Modal } from "@/components/base/Modal";
 

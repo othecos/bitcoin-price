@@ -1,7 +1,11 @@
 import { Server } from "socket.io";
-import { BitcoinPriceRepositoryType } from "../../entities/BitcoinPrice";
+import {
+  BitcoinPrice,
+  BitcoinPriceRepositoryType,
+} from "../../entities/BitcoinPrice";
 import { BitcoinPriceGateway } from "./bitcoin.gateway";
 import { BITCOIN_PRICE_UPDATE_INTERVAL } from "./bitcoin.constants";
+
 export class BitcoinService {
   private bitcoinPriceRepository: BitcoinPriceRepositoryType;
   private bitcoinPriceGateway: BitcoinPriceGateway;
@@ -31,6 +35,14 @@ export class BitcoinService {
     }
   }
 
+  public async saveBitcoinPrice(price: number): Promise<void> {
+    const newPrice = this.bitcoinPriceRepository.create({
+      price,
+      currency: "USD",
+    });
+    await this.bitcoinPriceRepository.save(newPrice);
+  }
+
   public async updateBitcoinPrice(io: Server): Promise<void> {
     try {
       const price = await this.fetchBitcoinPrice();
@@ -57,5 +69,12 @@ export class BitcoinService {
     const updateInterval = BITCOIN_PRICE_UPDATE_INTERVAL;
     this.updateBitcoinPrice(io);
     setInterval(() => this.updateBitcoinPrice(io), updateInterval);
+  }
+
+  public async getPriceHistory(limit: number): Promise<BitcoinPrice[]> {
+    return this.bitcoinPriceRepository.find({
+      order: { timestamp: "DESC" },
+      take: limit,
+    });
   }
 }
