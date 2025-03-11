@@ -2,39 +2,37 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { formatMoneyAmount } from "@/services/price";
-
-interface BitcoinHistoryData {
-  timestamp: string;
-  price: number;
-}
+import { BitcoinHistoryData, BitcoinService } from "@/services/bitcoin";
+import { WarningIcon } from "@/icons/warning";
+import { Tooltip } from "@/components/base/Tooltip";
 
 interface BitcoinHistoryProps {
   isInModal?: boolean;
 }
 
 export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
-  const [bitcoinHistory, setBitcoinHistory] = useState<BitcoinHistoryData[]>(
-    []
-  );
   const chartRef = useRef<SVGSVGElement>(null);
   const fetchBitcoinHistory = async () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/bitcoin/history`
     );
     const data = await response.json();
-    setBitcoinHistory(data);
+    if (data.length > 0) {
+      BitcoinService.setBitcoinHistoryInLocalStorage(data);
+    }
     return data;
   };
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<BitcoinHistoryData[], Error>({
     queryKey: ["bitcoinHistory"],
     queryFn: () => fetchBitcoinHistory(),
+    initialData: BitcoinService.getBitcoinHistoryFromLocalStorage(),
   });
 
   useEffect(() => {
-    if (bitcoinHistory.length > 0 && chartRef.current) {
+    if (data.length > 0 && chartRef.current) {
       createChart();
     }
-  }, [bitcoinHistory, isInModal]);
+  }, [data, isInModal, error]);
 
   const createChart = () => {
     if (!chartRef.current) return;
@@ -44,6 +42,8 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
 
     // Remove any existing tooltips
     d3.selectAll("body > .d3-tooltip").remove();
+
+    const color = error ? "#f43f5e" : "#3b82f6";
 
     // Set dimensions and margins
     const margin = { top: 20, right: 30, bottom: 50, left: 60 };
@@ -60,7 +60,7 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Parse dates and sort data chronologically
-    const parsedData = bitcoinHistory
+    const parsedData = data
       .map((d) => ({
         date: new Date(d.timestamp),
         price: d.price,
@@ -112,7 +112,7 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
       .append("path")
       .datum(parsedData)
       .attr("fill", "none")
-      .attr("stroke", "#3b82f6")
+      .attr("stroke", color)
       .attr("stroke-width", 2)
       .attr(
         "d",
@@ -130,7 +130,7 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
       .attr("cx", (d) => x(d.date))
       .attr("cy", (d) => y(d.price))
       .attr("r", 3)
-      .attr("fill", "#3b82f6");
+      .attr("fill", color);
 
     // Add tooltip functionality
     const tooltip = d3
@@ -169,22 +169,25 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
     return <div className="text-center py-4">Loading price history...</div>;
   }
 
-  if (error) {
-    return (
-      <div className="text-center py-4 text-red-600">
-        Error loading price history
-      </div>
-    );
-  }
-
-  if (bitcoinHistory.length === 0) {
+  if (data.length === 0) {
     return <div className="text-center py-4">No price history available</div>;
   }
+  const messageColor = error ? "text-red-600" : "text-gray-500";
   return (
-    <div className="bitcoin-history-chart">
+    <div id="bitcoin-history-chart">
       <svg ref={chartRef} className="w-full"></svg>
-      <div className="text-xs text-gray-500 mt-2 text-center">
-        Bitcoin price history over time
+      <div
+        className={`flex items-center justify-center gap-2 text-xs text-center ${messageColor}`}
+      >
+        <span>Bitcoin price history over time</span>{" "}
+        {error && (
+          <Tooltip
+            content="Error loading price history. Using local storage as fallback."
+            position="top"
+          >
+            <WarningIcon className="w-4 h-4" />
+          </Tooltip>
+        )}
       </div>
     </div>
   );

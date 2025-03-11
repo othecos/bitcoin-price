@@ -7,6 +7,7 @@ import { BitcoinPrice } from "@/components/pages/Home/BitcoinPrice";
 import { BitcoinCalculator } from "@/components/pages/Home/BitcoinCalculator";
 import { CardWithFlip } from "@/components/base/CardWithFlip";
 import { BitcoinHistory } from "@/components/pages/Home/BitcoinHistory";
+import { BitcoinService } from "@/services/bitcoin";
 import { Modal } from "@/components/base/Modal";
 
 interface HomeProps {
@@ -31,18 +32,18 @@ export default function Home({ socket }: HomeProps) {
       }
       const data = await response.json();
       setBitcoinPrice(data.price);
-      // Also save the price in local storage have last price even when server is down
-      LocalStorageService.setItem(LocalStorageKeys.BITCOIN_PRICE, data.price);
+      if (data.price !== null) {
+        // Also save the price in local storage have last price even when server is down
+        BitcoinService.setBitcoinPriceInLocalStorage(data.price);
+      }
       return data;
     } catch (error) {
       console.error("Error fetching bitcoin price", error);
       // Try to get the last price from local storage
-      const lastPrice = LocalStorageService.getItem(
-        LocalStorageKeys.BITCOIN_PRICE
-      );
+      const lastPrice = BitcoinService.getBitcoinPriceFromLocalStorage();
       // If last price is available, use it
-      if (lastPrice) {
-        setBitcoinPrice(Number(lastPrice));
+      if (lastPrice !== null) {
+        setBitcoinPrice(lastPrice);
         console.log("Using last price", lastPrice);
         return;
       }
@@ -53,6 +54,7 @@ export default function Home({ socket }: HomeProps) {
   const { data, isLoading, error } = useQuery({
     queryKey: ["bitcoinPrice"],
     queryFn: fetchBitcoinPrice,
+    initialData: BitcoinService.getBitcoinPriceFromLocalStorage(),
   });
   const priceToDisplay = bitcoinPrice || (data?.price ? Number(data.price) : 0);
 

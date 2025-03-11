@@ -1,13 +1,10 @@
 import { BitcoinService } from "@/services/bitcoin";
 import { formatMoneyAmount } from "@/services/price";
-import { useState } from "react";
-import { Modal } from "@/components/base/Modal";
-import { BitcoinHistory } from "./BitcoinHistory";
+import { useEffect, useState } from "react";
 
 export const BitcoinCalculator = ({ price }: { price: number }) => {
   const [displayValue, setDisplayValue] = useState<string>("");
   const [bitcoinAmount, setBitcoinAmount] = useState<number | 0>(0);
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
@@ -27,6 +24,20 @@ export const BitcoinCalculator = ({ price }: { price: number }) => {
       setBitcoinAmount(0);
     }
   };
+
+  const handlePriceChange = (price: number) => {
+    if (price) {
+      const result = BitcoinService.calculateBitcoinAmount(
+        parseFloat(displayValue),
+        price
+      );
+      setBitcoinAmount(result.error ? 0 : result.value);
+    }
+  };
+
+  useEffect(() => {
+    handlePriceChange(price);
+  }, [price]);
 
   return (
     <div className="flex flex-col gap-4">
