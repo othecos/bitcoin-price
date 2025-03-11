@@ -1,5 +1,6 @@
 export enum LocalStorageKeys {
   BITCOIN_PRICE = "bitcoin:price",
+  BITCOIN_HISTORY = "bitcoin:history",
 }
 
 export class LocalStorageService {

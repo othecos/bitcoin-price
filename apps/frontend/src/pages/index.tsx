@@ -1,19 +1,13 @@
 import { useState } from "react";
-import { Button } from "@/components/base/Button";
 import { useQuery } from "@tanstack/react-query";
 import { Socket } from "socket.io-client";
 import { SocketChannels, useSocketListener } from "@/hooks/useSocketListener";
-import { Case, Default, SwitchRender } from "@/components/base/SwitchRender";
 import { LocalStorageKeys, LocalStorageService } from "@/services/localstorage";
-import { WarningIcon } from "@/icons/warning";
-import { CheckIcon } from "@/icons/check";
-import { Tooltip } from "@/components/base/Tooltip";
-import { BitcoinService } from "@/services/bitcoin";
-import { formatMoneyAmount } from "@/services/price";
 import { BitcoinPrice } from "@/components/pages/Home/BitcoinPrice";
 import { BitcoinCalculator } from "@/components/pages/Home/BitcoinCalculator";
 import { CardWithFlip } from "@/components/base/CardWithFlip";
 import { BitcoinHistory } from "@/components/pages/Home/BitcoinHistory";
+import { Modal } from "@/components/base/Modal";
 
 interface HomeProps {
   socket: Socket | null;
@@ -21,13 +15,13 @@ interface HomeProps {
 
 export default function Home({ socket }: HomeProps) {
   const [bitcoinPrice, setBitcoinPrice] = useState<number | null>(null);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
 
   useSocketListener(socket, SocketChannels.BITCOIN_PRICE_UPDATE, (data) => {
     setBitcoinPrice(data.price);
   });
 
   const fetchBitcoinPrice = async () => {
-    console.log("fetchBitcoinPrice");
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/bitcoin/price`
@@ -42,9 +36,11 @@ export default function Home({ socket }: HomeProps) {
       return data;
     } catch (error) {
       console.error("Error fetching bitcoin price", error);
+      // Try to get the last price from local storage
       const lastPrice = LocalStorageService.getItem(
         LocalStorageKeys.BITCOIN_PRICE
       );
+      // If last price is available, use it
       if (lastPrice) {
         setBitcoinPrice(Number(lastPrice));
         console.log("Using last price", lastPrice);
@@ -60,6 +56,13 @@ export default function Home({ socket }: HomeProps) {
   });
   const priceToDisplay = bitcoinPrice || (data?.price ? Number(data.price) : 0);
 
+  const openHistoryModal = () => {
+    setIsHistoryModalOpen(true);
+  };
+
+  const closeHistoryModal = () => {
+    setIsHistoryModalOpen(false);
+  };
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <CardWithFlip
@@ -79,11 +82,22 @@ export default function Home({ socket }: HomeProps) {
         backContent={
           <div>
             <h3 className="text-lg font-semibold mb-2">Bitcoin History</h3>
-            <BitcoinHistory />
+            <BitcoinHistory isInModal={false} />
           </div>
         }
-        frontButtonText="See history"
+        frontButtonText="See history as card"
+        secondaryButtonText="See history as modal"
+        secondaryButtonOnClick={openHistoryModal}
       />
+
+      {/* Bitcoin History Modal */}
+      <Modal
+        isOpen={isHistoryModalOpen}
+        onClose={closeHistoryModal}
+        title="Bitcoin Price History"
+      >
+        <BitcoinHistory isInModal={true} />
+      </Modal>
     </div>
   );
 }

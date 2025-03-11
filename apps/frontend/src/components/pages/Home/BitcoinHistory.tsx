@@ -7,7 +7,12 @@ interface BitcoinHistoryData {
   timestamp: string;
   price: number;
 }
-export const BitcoinHistory = () => {
+
+interface BitcoinHistoryProps {
+  isInModal?: boolean;
+}
+
+export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
   const [bitcoinHistory, setBitcoinHistory] = useState<BitcoinHistoryData[]>(
     []
   );
@@ -29,13 +34,11 @@ export const BitcoinHistory = () => {
     if (bitcoinHistory.length > 0 && chartRef.current) {
       createChart();
     }
-  }, [bitcoinHistory]);
+  }, [bitcoinHistory, isInModal]);
 
-  console.log(bitcoinHistory);
   const createChart = () => {
     if (!chartRef.current) return;
 
-    console.log("Creating (or updating) chart");
     // Clear any existing chart
     d3.select(chartRef.current).selectAll("*").remove();
 
@@ -44,8 +47,9 @@ export const BitcoinHistory = () => {
 
     // Set dimensions and margins
     const margin = { top: 20, right: 30, bottom: 50, left: 60 };
-    const width = 500 - margin.left - margin.right;
-    const height = 300 - margin.top - margin.bottom;
+    // Adjust width based on whether it's in modal or card
+    const width = (isInModal ? 700 : 500) - margin.left - margin.right;
+    const height = (isInModal ? 400 : 300) - margin.top - margin.bottom;
 
     // Create SVG
     const svg = d3
@@ -63,7 +67,6 @@ export const BitcoinHistory = () => {
       }))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-    console.log("Parsed data", parsedData);
     // Set scales
     const x = d3
       .scaleTime()

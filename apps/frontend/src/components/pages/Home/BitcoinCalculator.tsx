@@ -1,10 +1,33 @@
 import { BitcoinService } from "@/services/bitcoin";
 import { formatMoneyAmount } from "@/services/price";
 import { useState } from "react";
+import { Modal } from "@/components/base/Modal";
+import { BitcoinHistory } from "./BitcoinHistory";
 
 export const BitcoinCalculator = ({ price }: { price: number }) => {
-  const [userValue, setUserValue] = useState<string>("");
+  const [displayValue, setDisplayValue] = useState<string>("");
   const [bitcoinAmount, setBitcoinAmount] = useState<number | 0>(0);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    // Extract just the numeric value (removing currency formatting)
+    const numericValue = rawValue.replace(/[^\d.]/g, "");
+
+    // Update the displayed value with formatting
+    if (numericValue) {
+      setDisplayValue(numericValue);
+      const result = BitcoinService.calculateBitcoinAmount(
+        parseFloat(numericValue),
+        price
+      );
+      setBitcoinAmount(result.error ? 0 : result.value);
+    } else {
+      setDisplayValue("");
+      setBitcoinAmount(0);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -16,16 +39,9 @@ export const BitcoinCalculator = ({ price }: { price: number }) => {
         </label>
         <input
           id="bitcoinValue"
-          type="number"
-          value={userValue}
-          onChange={(e) => {
-            setUserValue(e.target.value);
-            const result = BitcoinService.calculateBitcoinAmount(
-              Number(e.target.value),
-              price
-            );
-            setBitcoinAmount(result.error ? 0 : result.value);
-          }}
+          type="text"
+          value={displayValue}
+          onChange={handleInputChange}
           placeholder="Enter USD value"
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

@@ -4,6 +4,8 @@ interface CardWithFlipProps {
   frontContent: ReactNode;
   backContent: ReactNode;
   frontButtonText?: string;
+  secondaryButtonText?: string;
+  secondaryButtonOnClick?: () => void;
   className?: string;
 }
 
@@ -11,6 +13,8 @@ export const CardWithFlip: React.FC<CardWithFlipProps> = ({
   frontContent,
   backContent,
   frontButtonText = "View Details",
+  secondaryButtonText = "View History",
+  secondaryButtonOnClick = () => {},
   className = "",
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -32,13 +36,20 @@ export const CardWithFlip: React.FC<CardWithFlipProps> = ({
         <div className="absolute w-full h-full backface-hidden rounded-lg shadow-md flex flex-col bg-white">
           <div className="p-6 flex-1 flex flex-col">
             {frontContent}
-            <div className="flex justify-center mt-auto pt-4">
+            <div className="flex justify-center mt-auto pt-4 gap-2">
               <button
                 onClick={handleFlip}
                 className="bg-blue-500 text-white border-none py-2 px-4 rounded font-medium cursor-pointer transition-colors hover:bg-blue-600"
                 aria-label="Flip card to see details"
               >
                 {frontButtonText}
+              </button>
+              <button
+                onClick={secondaryButtonOnClick}
+                className="bg-blue-500 text-white border-none py-2 px-4 rounded font-medium cursor-pointer transition-colors hover:bg-blue-600"
+                aria-label="Flip card to see details"
+              >
+                {secondaryButtonText}
               </button>
             </div>
           </div>

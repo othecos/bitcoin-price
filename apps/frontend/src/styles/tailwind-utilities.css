@@ -11,10 +11,6 @@
   backface-visibility: hidden;
 }
 
-.rotate-y-180 {
-  transform: rotateY(180deg);
-}
-
 .duration-800 {
   transition-duration: 800ms;
 } 
