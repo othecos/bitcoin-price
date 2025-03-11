@@ -21,9 +21,10 @@ export const formatMoneyAmount = (
 ): string => {
   const value = amount
     ? typeof amount === "string"
-      ? parseInt(amount, 10)
+      ? parseFloat(amount)
       : amount
     : 0;
+
   return withCurrency
     ? usNumberFormatter.withCurrency(decimals).format(value)
     : usNumberFormatter.withoutCurrency(decimals).format(value);

@@ -22,7 +22,10 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
     }
     return data;
   };
-  const { data, isLoading, error } = useQuery<BitcoinHistoryData[], Error>({
+  const { data, isLoading, error, isFetched } = useQuery<
+    BitcoinHistoryData[],
+    Error
+  >({
     queryKey: ["bitcoinHistory"],
     queryFn: () => fetchBitcoinHistory(),
     initialData: BitcoinService.getBitcoinHistoryFromLocalStorage(),
@@ -42,6 +45,10 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
 
     // Remove any existing tooltips
     d3.selectAll("body > .d3-tooltip").remove();
+
+    if (data.length === 0) {
+      return;
+    }
 
     const color = error ? "#f43f5e" : "#3b82f6";
 
@@ -169,13 +176,13 @@ export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
     return <div className="text-center py-4">Loading price history...</div>;
   }
 
-  if (data.length === 0) {
-    return <div className="text-center py-4">No price history available</div>;
-  }
   const messageColor = error ? "text-red-600" : "text-gray-500";
   return (
     <div id="bitcoin-history-chart">
       <svg ref={chartRef} className="w-full"></svg>
+      {isFetched && data.length === 0 && (
+        <div className="text-center py-4">No price history available</div>
+      )}
       <div
         className={`flex items-center justify-center gap-2 text-xs text-center ${messageColor}`}
       >

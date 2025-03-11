@@ -36,7 +36,7 @@ export const BitcoinPrice = ({
               {formatMoneyAmount(price, true, 2)}
             </span>
             <span>
-              <Tooltip content={tooltipText} position="top">
+              <Tooltip content={tooltipText} position="bottom">
                 {icon}
               </Tooltip>
             </span>
