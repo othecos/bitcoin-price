@@ -16,7 +16,7 @@ export const BitcoinCalculator = ({ price }: { price: number }) => {
       setDisplayValue(numericValue);
       const result = BitcoinService.calculateBitcoinAmount(
         parseFloat(numericValue),
-        price,
+        price
       );
       setBitcoinAmount(result.error ? 0 : result.value);
     } else {
@@ -29,7 +29,7 @@ export const BitcoinCalculator = ({ price }: { price: number }) => {
     if (price) {
       const result = BitcoinService.calculateBitcoinAmount(
         parseFloat(displayValue),
-        price,
+        price
       );
       setBitcoinAmount(result.error ? 0 : result.value);
     }
@@ -46,7 +46,7 @@ export const BitcoinCalculator = ({ price }: { price: number }) => {
           htmlFor="bitcoinValue"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-          Enter USD amount:
+          Convert USD to Bitcoin:
         </label>
         <input
           id="bitcoinValue"
