@@ -1,111 +1,168 @@
 # Bitcoin Price Tracker
 
-A full-stack application for tracking Bitcoin prices in real-time.
-
-## Tech Stack
-
-### Frontend
-- Next.js
-- TypeScript
-- Tailwind CSS
-- React Query
-- Socket.IO Client
-- Jest & React Testing Library
-
-### Backend
-- Node.js
-- Express
-- TypeScript
-- TypeORM
-- SQLite
-- Socket.IO
-
-### DevOps
-- Turborepo
-- pnpm
-- Docker
-- ESLint
-- Prettier
+A real-time Bitcoin price tracking application built with Next.js and Express. The application displays current Bitcoin prices, historical data through interactive charts, and provides a Bitcoin/USD calculator.
 
 ## Project Structure
 
-```
-bitcoin-price/
-├── apps/
-│   ├── frontend/         # Next.js frontend application
-│   └── backend/          # Express backend application
-├── packages/
-│   ├── ui/               # Shared UI components
-│   ├── eslint-config/    # Shared ESLint configuration
-│   └── typescript-config/ # Shared TypeScript configuration
-├── docker-compose.yml    # Docker Compose configuration
-└── package.json          # Root package.json for the monorepo
-```
+## Features
 
-## Getting Started
+- Real-time Bitcoin price updates using WebSocket
+- Historical price data visualization
+- Bitcoin/USD calculator
+- Fallback to local storage when offline
+- Comprehensive test coverage
 
-### Prerequisites
+## Prerequisites
 
-- Node.js 18 or later
-- pnpm
-- Docker and Docker Compose (for containerized development)
+Before you begin, ensure you have installed:
 
-### Development
+- Node.js (v18 or higher)
+- pnpm (v8 or higher)
 
-#### Using Docker (recommended)
+## Installation
 
-1. Clone the repository
-2. Start the development environment:
+1. Clone the repository:
 
 ```bash
-pnpm docker:up
+git clone git@github.com:othecos/bitcoin-price.git
+cd bitcoin-price
 ```
 
-This will start both the frontend and backend services in development mode with hot reloading.
-
-3. Access the applications:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3001
-
-4. To stop the services:
-
-```bash
-pnpm docker:down
-```
-
-#### Local Development
-
-1. Clone the repository
 2. Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-3. Start the development servers:
+3. Set up environment variables:
+
+For the backend (`apps/backend/.env`):
+
+```env
+PORT=3001
+FRONTEND_URL=http://localhost:3000
+```
+
+For the frontend (`apps/frontend/.env`):
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+## Running the Applications
+
+### Development Mode
+
+To run both applications simultaneously:
 
 ```bash
 pnpm dev
 ```
 
-This will start both the frontend and backend in development mode.
+To run applications individually:
 
-### Building for Production
-
-To build all applications:
+Backend:
 
 ```bash
-pnpm build
+pnpm --filter backend dev
 ```
 
-### Testing
+Frontend:
 
-To run tests for all applications:
+```bash
+pnpm --filter frontend dev
+```
+
+### Running Tests
+
+Run all tests:
 
 ```bash
 pnpm test
 ```
 
+Run tests for a specific application:
+
+```bash
+pnpm --filter frontend test
+# or
+pnpm --filter backend test
+```
+
+## Docker Support
+
+Build and run using Docker:
+
+Backend:
+
+```bash
+cd apps/backend
+docker build -t bitcoin-price-backend .
+docker run -p 3001:3001 bitcoin-price-backend
+```
+
+Frontend:
+
+```bash
+cd apps/frontend
+docker build -t bitcoin-price-frontend .
+docker run -p 3000:3000 bitcoin-price-frontend
+```
+
+## API Endpoints
+
+### Backend API
+
+- `GET /api/bitcoin/price` - Get the latest Bitcoin price
+- `GET /api/bitcoin/history` - Get historical Bitcoin prices
+  - Query Parameters:
+    - `limit` (optional): Number of historical entries to return (default: 10)
+
+### WebSocket Events
+
+- `bitcoin:price-update` - Real-time price updates
+
+## Testing
+
+The project includes several types of tests:
+
+- Unit tests for components
+- Integration tests for API endpoints
+- Hook testing
+- Service layer testing
+
+Run the test suites:
+
+```bash
+# Run all tests with coverage
+pnpm test
+
+# Run tests in watch mode
+pnpm test -- --watch
+```
+
+## Tech Stack
+
+Frontend:
+
+- Next.js
+- React
+- TypeScript
+- TailwindCSS
+- Socket.io-client
+- D3.js
+- React Query
+- Jest & Testing Library
+
+Backend:
+
+- Express
+- TypeScript
+- SQLite
+- TypeORM
+- Socket.io
+- Jest
+
 ## License
 
-MIT 
+[MIT License](LICENSE)
