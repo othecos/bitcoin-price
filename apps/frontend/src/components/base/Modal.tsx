@@ -1,3 +1,4 @@
+import { useEscapeListener } from "@/hooks/useEscapeListener";
 import React, { ReactNode, useEffect } from "react";
 
 interface ModalProps {
@@ -13,28 +14,20 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   children,
 }) => {
-  // Close modal when Escape key is pressed
-  useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscapeKey);
-
+  const onClear = () => {
+    document.body.style.overflow = "auto";
+  };
+  const handleOnEscapeListener = () => {
     // Prevent scrolling on body when modal is open
     if (isOpen) {
+      onClose();
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
+  };
 
-    return () => {
-      document.removeEventListener("keydown", handleEscapeKey);
-      document.body.style.overflow = "auto";
-    };
-  }, [isOpen, onClose]);
+  useEscapeListener(handleOnEscapeListener, onClear);
 
   if (!isOpen) return null;
 

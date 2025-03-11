@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 
-export const useEscapeListener = (callback: () => void) => {
+export const useEscapeListener = (
+  callback: () => void,
+  onClear?: () => void
+) => {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -8,6 +11,11 @@ export const useEscapeListener = (callback: () => void) => {
       }
     };
     window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [callback]);
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+      if (onClear) {
+        onClear();
+      }
+    };
+  }, [callback, onClear]);
 };

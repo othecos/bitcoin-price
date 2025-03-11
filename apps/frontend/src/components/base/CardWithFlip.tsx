@@ -1,4 +1,5 @@
-import React, { ReactNode, useState } from "react";
+import { useEscapeListener } from "@/hooks/useEscapeListener";
+import React, { ReactNode, useCallback, useState } from "react";
 
 interface CardWithFlipProps {
   frontContent: ReactNode;
@@ -22,6 +23,14 @@ export const CardWithFlip: React.FC<CardWithFlipProps> = ({
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
+
+  const handleOnEscapeListener = useCallback(() => {
+    if (isFlipped) {
+      setIsFlipped(false);
+    }
+  }, [isFlipped]);
+
+  useEscapeListener(handleOnEscapeListener);
 
   return (
     <div
