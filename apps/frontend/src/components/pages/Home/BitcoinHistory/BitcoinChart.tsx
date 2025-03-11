@@ -81,7 +81,7 @@ export const BitcoinChart = ({
         d3
           .axisBottom(x)
           .ticks(tickCount)
-          .tickFormat(d3.timeFormat("%H:%M") as any)
+          .tickFormat(d3.timeFormat("%H:%M") as any),
       )
       .selectAll("text")
       .style("text-anchor", "end")
@@ -94,7 +94,7 @@ export const BitcoinChart = ({
       d3
         .axisLeft(y)
         .ticks(5)
-        .tickFormat((d) => `${formatMoneyAmount(d as number, true, 2)}`)
+        .tickFormat((d) => `${formatMoneyAmount(d as number, true, 2)}`),
     );
 
     // Add the line
@@ -109,7 +109,7 @@ export const BitcoinChart = ({
         d3
           .line<{ date: Date; price: number }>()
           .x((d) => x(d.date))
-          .y((d) => y(d.price))
+          .y((d) => y(d.price)),
       );
 
     // Add dots
@@ -146,7 +146,7 @@ export const BitcoinChart = ({
           .html(
             `<strong>Date:</strong> ${typedD.date.toLocaleDateString()}<br>
              <strong>Time:</strong> ${typedD.date.toLocaleTimeString()}<br>
-             <strong>Price:</strong> ${formatMoneyAmount(typedD.price, true, 2)}`
+             <strong>Price:</strong> ${formatMoneyAmount(typedD.price, true, 2)}`,
           )
           .style("left", `${event.pageX + 10}px`)
           .style("top", `${event.pageY - 28}px`);

@@ -16,7 +16,7 @@ export const BitcoinCalculator = ({ price }: { price: number }) => {
       setDisplayValue(numericValue);
       const result = BitcoinService.calculateBitcoinAmount(
         parseFloat(numericValue),
-        price
+        price,
       );
       setBitcoinAmount(result.error ? 0 : result.value);
     } else {
@@ -29,7 +29,7 @@ export const BitcoinCalculator = ({ price }: { price: number }) => {
     if (price) {
       const result = BitcoinService.calculateBitcoinAmount(
         parseFloat(displayValue),
-        price
+        price,
       );
       setBitcoinAmount(result.error ? 0 : result.value);
     }

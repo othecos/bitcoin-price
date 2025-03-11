@@ -47,7 +47,7 @@ describe("BitcoinService", () => {
     it("should handle undefined price", () => {
       const result = BitcoinService.calculateBitcoinAmount(
         50000,
-        undefined as unknown as number
+        undefined as unknown as number,
       );
       expect(result.value).toBe(0);
       expect(result.error).toBe("Invalid price");

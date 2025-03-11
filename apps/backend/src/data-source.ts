@@ -1,10 +1,10 @@
-import { DataSource } from 'typeorm';
-import { BitcoinPrice } from './entities/BitcoinPrice';
-import path from 'path';
+import { DataSource } from "typeorm";
+import { BitcoinPrice } from "./entities/BitcoinPrice";
+import path from "path";
 
 export const AppDataSource = new DataSource({
-  type: 'sqlite',
-  database: path.resolve(__dirname, '../database.sqlite'),
+  type: "sqlite",
+  database: path.resolve(__dirname, "../database.sqlite"),
   // This would be false in production
   // Should be handled by migrations in production
   synchronize: true,
@@ -13,4 +13,4 @@ export const AppDataSource = new DataSource({
   // Migrations would be handled by the migrations folder in production
   migrations: [],
   subscribers: [],
-}); 
+});

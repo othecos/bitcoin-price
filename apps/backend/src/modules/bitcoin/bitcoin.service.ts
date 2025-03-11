@@ -11,7 +11,7 @@ export class BitcoinService {
   private bitcoinPriceGateway: BitcoinPriceGateway;
   constructor(
     bitcoinPriceRepository: BitcoinPriceRepositoryType,
-    bitcoinPriceGateway: BitcoinPriceGateway
+    bitcoinPriceGateway: BitcoinPriceGateway,
   ) {
     this.bitcoinPriceRepository = bitcoinPriceRepository;
     this.bitcoinPriceGateway = bitcoinPriceGateway;

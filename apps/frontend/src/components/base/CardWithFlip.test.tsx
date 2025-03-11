@@ -7,7 +7,7 @@ describe("CardWithFlip", () => {
       <CardWithFlip
         frontContent={<div>Front</div>}
         backContent={<div>Back</div>}
-      />
+      />,
     );
     expect(screen.getByText("Front")).toBeInTheDocument();
   });
@@ -19,7 +19,7 @@ describe("CardWithFlip", () => {
         backContent={<div>Back</div>}
         frontButtonText="View Details"
         secondaryButtonText="View History"
-      />
+      />,
     );
     expect(screen.getByText("View History")).toBeInTheDocument();
     fireEvent.click(screen.getByText("View Details"));

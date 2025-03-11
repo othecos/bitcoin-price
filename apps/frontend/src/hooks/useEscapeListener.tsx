@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 export const useEscapeListener = (
   callback: () => void,
-  onClear?: () => void
+  onClear?: () => void,
 ) => {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {

@@ -8,7 +8,7 @@ export enum SocketChannels {
 export const useSocketListener = (
   socket: Socket | null,
   channel: SocketChannels,
-  callback: (...args: any[]) => void
+  callback: (...args: any[]) => void,
 ) => {
   useEffect(() => {
     if (socket) {

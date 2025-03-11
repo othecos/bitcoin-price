@@ -26,7 +26,7 @@ describe("BitcoinService", () => {
 
     service = new BitcoinService(
       mockRepository as unknown as BitcoinPriceRepositoryType,
-      mockGateway
+      mockGateway,
     );
   });
 

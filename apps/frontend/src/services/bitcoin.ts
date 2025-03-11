@@ -30,12 +30,12 @@ export class BitcoinService {
   static setBitcoinPriceInLocalStorage(price: string | number) {
     LocalStorageService.setItem(
       LocalStorageKeys.BITCOIN_PRICE,
-      price.toString()
+      price.toString(),
     );
   }
   static getBitcoinHistoryFromLocalStorage() {
     const history = LocalStorageService.getItem(
-      LocalStorageKeys.BITCOIN_HISTORY
+      LocalStorageKeys.BITCOIN_HISTORY,
     );
     return history ? (JSON.parse(history) as BitcoinHistoryData[]) : [];
   }
@@ -43,7 +43,7 @@ export class BitcoinService {
   static setBitcoinHistoryInLocalStorage(history: any[]) {
     LocalStorageService.setItem(
       LocalStorageKeys.BITCOIN_HISTORY,
-      JSON.stringify(history)
+      JSON.stringify(history),
     );
   }
 }

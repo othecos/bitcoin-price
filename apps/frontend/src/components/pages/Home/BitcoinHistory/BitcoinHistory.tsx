@@ -14,7 +14,7 @@ interface BitcoinHistoryProps {
 export const BitcoinHistory = ({ isInModal = false }: BitcoinHistoryProps) => {
   const fetchBitcoinHistory = async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/bitcoin/history`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/bitcoin/history`,
     );
     const data = await response.json();
     if (data.length > 0) {

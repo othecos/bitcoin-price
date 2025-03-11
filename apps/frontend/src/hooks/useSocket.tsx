@@ -7,7 +7,7 @@ export function useSocket(): Socket | null {
   useEffect(() => {
     // Initialize Socket.IO client
     const socketInstance = io(
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
     );
 
     setSocket(socketInstance);

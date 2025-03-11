@@ -17,7 +17,7 @@ const usNumberFormatter = {
 export const formatMoneyAmount = (
   amount: string | number | undefined,
   withCurrency = false,
-  decimals = 2
+  decimals = 2,
 ): string => {
   const value = amount
     ? typeof amount === "string"

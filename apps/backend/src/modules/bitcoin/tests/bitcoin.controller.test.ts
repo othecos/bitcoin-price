@@ -38,7 +38,7 @@ describe("BitcoinController", () => {
     };
 
     controller = new BitcoinController(
-      mockService as unknown as BitcoinService
+      mockService as unknown as BitcoinService,
     );
   });
 
@@ -48,7 +48,7 @@ describe("BitcoinController", () => {
 
       await controller.getLatestPrice(
         mockRequest as Request,
-        mockResponse as Response
+        mockResponse as Response,
       );
 
       expect(mockResponse.json).toHaveBeenCalledWith({ price: 50000 });
@@ -60,7 +60,7 @@ describe("BitcoinController", () => {
 
       await controller.getLatestPrice(
         mockRequest as Request,
-        mockResponse as Response
+        mockResponse as Response,
       );
 
       expect(mockService.saveBitcoinPrice).toHaveBeenCalledWith(45000);

@@ -24,7 +24,7 @@ export default function Home({ socket }: HomeProps) {
   const fetchBitcoinPrice = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/bitcoin/price`
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/bitcoin/price`,
       );
       if (!response.ok) {
         throw new Error("Failed to fetch bitcoin price");

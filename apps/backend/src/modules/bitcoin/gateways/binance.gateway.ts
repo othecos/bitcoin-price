@@ -10,7 +10,7 @@ export class BinanceGateway implements BitcoinPriceGateway {
   public async getLatestPrice(): Promise<number> {
     try {
       const response = await axios.get<BinanceGetBitcoinPrice>(
-        BINANCE_BITCOIN_PRICE_URL
+        BINANCE_BITCOIN_PRICE_URL,
       );
       return Number(response.data.price);
     } catch (error) {
