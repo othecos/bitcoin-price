@@ -31,11 +31,16 @@ export const BitcoinHistory = () => {
     }
   }, [bitcoinHistory]);
 
+  console.log(bitcoinHistory);
   const createChart = () => {
     if (!chartRef.current) return;
 
+    console.log("Creating (or updating) chart");
     // Clear any existing chart
     d3.select(chartRef.current).selectAll("*").remove();
+
+    // Remove any existing tooltips
+    d3.selectAll("body > .d3-tooltip").remove();
 
     // Set dimensions and margins
     const margin = { top: 20, right: 30, bottom: 50, left: 60 };
@@ -58,6 +63,7 @@ export const BitcoinHistory = () => {
       }))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
 
+    console.log("Parsed data", parsedData);
     // Set scales
     const x = d3
       .scaleTime()
@@ -72,6 +78,8 @@ export const BitcoinHistory = () => {
       ])
       .range([height, 0]);
 
+    const tickCount = Math.min(parsedData.length, 10);
+
     // Add X axis
     svg
       .append("g")
@@ -79,7 +87,7 @@ export const BitcoinHistory = () => {
       .call(
         d3
           .axisBottom(x)
-          .ticks(d3.timeMinute.every(1))
+          .ticks(tickCount)
           .tickFormat(d3.timeFormat("%H:%M") as any)
       )
       .selectAll("text")
@@ -173,7 +181,7 @@ export const BitcoinHistory = () => {
     <div className="bitcoin-history-chart">
       <svg ref={chartRef} className="w-full"></svg>
       <div className="text-xs text-gray-500 mt-2 text-center">
-        Bitcoin price history over time (last 5 minutes)
+        Bitcoin price history over time
       </div>
     </div>
   );

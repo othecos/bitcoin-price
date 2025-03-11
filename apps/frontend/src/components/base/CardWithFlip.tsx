@@ -20,16 +20,22 @@ export const CardWithFlip: React.FC<CardWithFlipProps> = ({
   };
 
   return (
-    <div className={`flip-card-container ${className}`}>
-      <div className={`flip-card ${isFlipped ? "flipped" : ""}`}>
+    <div
+      className={`perspective-1000 w-full h-full max-w-[600px] ${className}`}
+    >
+      <div
+        className="relative w-full h-full min-h-[500px] transition-transform duration-800 transform-style-3d"
+        // Tailwind doesn't support runtime classes, so we need to use inline styles
+        style={{ transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
+      >
         {/* Front of the card */}
-        <div className="flip-card-front">
-          <div className="flip-card-content">
+        <div className="absolute w-full h-full backface-hidden rounded-lg shadow-md flex flex-col bg-white">
+          <div className="p-6 flex-1 flex flex-col">
             {frontContent}
-            <div className="flip-card-button-container">
+            <div className="flex justify-center mt-auto pt-4">
               <button
                 onClick={handleFlip}
-                className="flip-card-button"
+                className="bg-blue-500 text-white border-none py-2 px-4 rounded font-medium cursor-pointer transition-colors hover:bg-blue-600"
                 aria-label="Flip card to see details"
               >
                 {frontButtonText}
@@ -39,17 +45,21 @@ export const CardWithFlip: React.FC<CardWithFlipProps> = ({
         </div>
 
         {/* Back of the card */}
-        <div className="flip-card-back">
-          <div className="flip-card-back-header">
+        <div
+          className="absolute w-full h-full backface-hidden rounded-lg shadow-md flex flex-col bg-white"
+          // Tailwind doesn't support runtime classes, so we need to use inline styles
+          style={{ transform: "rotateY(180deg)" }}
+        >
+          <div className="p-3 flex items-center border-b border-gray-200">
             <button
               onClick={handleFlip}
-              className="flip-card-back-button"
+              className="bg-transparent border-none text-gray-600 cursor-pointer p-1 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100 hover:text-gray-800"
               aria-label="Flip card back"
             >
               <BackIcon />
             </button>
           </div>
-          <div className="flip-card-content">{backContent}</div>
+          <div className="p-6 flex-1">{backContent}</div>
         </div>
       </div>
     </div>

@@ -2,4 +2,4 @@
 @tailwind components;
 @tailwind utilities;
 
-@import './card-flip.css';
+@import './tailwind-utilities.css';

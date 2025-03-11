@@ -20,6 +20,13 @@ export const Tooltip = ({
     right: "left-full top-1/2 transform -translate-y-1/2 ml-2",
   };
 
+  const tooltipClasses = {
+    top: "top-full -translate-y-1/2 left-1/2 -translate-x-1/2",
+    bottom: "bottom-full translate-y-1/2 left-1/2 -translate-x-1/2",
+    left: "left-full -translate-x-1/2 top-1/2 -translate-y-1/2",
+    right: "right-full translate-x-1/2 top-1/2 -translate-y-1/2",
+  };
+
   return (
     <div
       className="relative inline-block"
@@ -29,20 +36,12 @@ export const Tooltip = ({
       {children}
       {isVisible && (
         <div
-          className={`absolute z-10 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-md shadow-sm max-w-xs whitespace-normal ${positionClasses[position]}`}
+          className={`absolute z-100 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-md shadow-sm max-w-xs whitespace-normal ${positionClasses[position]}`}
           style={{ width: "max-content", maxWidth: "200px" }}
         >
           {content}
           <div
-            className={`absolute w-2 h-2 bg-gray-900 transform rotate-45 ${
-              position === "top"
-                ? "top-full -translate-y-1/2 left-1/2 -translate-x-1/2"
-                : position === "bottom"
-                  ? "bottom-full translate-y-1/2 left-1/2 -translate-x-1/2"
-                  : position === "left"
-                    ? "left-full -translate-x-1/2 top-1/2 -translate-y-1/2"
-                    : "right-full translate-x-1/2 top-1/2 -translate-y-1/2"
-            }`}
+            className={`absolute w-2 h-2 bg-gray-900 transform rotate-45 ${tooltipClasses[position]}`}
           />
         </div>
       )}
