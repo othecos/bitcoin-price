@@ -9,6 +9,7 @@ import { WarningIcon } from "@/icons/warning";
 import { CheckIcon } from "@/icons/check";
 import { Tooltip } from "@/components/Tooltip";
 import { BitcoinService } from "@/services/bitcoin";
+import { formatMoneyAmount } from "@/services/price";
 
 interface HomeProps {
   socket: Socket | null;
@@ -17,8 +18,7 @@ interface HomeProps {
 export default function Home({ socket }: HomeProps) {
   const [bitcoinPrice, setBitcoinPrice] = useState<number | null>(null);
   const [userValue, setUserValue] = useState<string>("");
-  const [bitcoinAmount, setBitcoinAmount] = useState<number | null>(null);
-  console.log("bitcoinAmount", bitcoinAmount);
+  const [bitcoinAmount, setBitcoinAmount] = useState<number | 0>(0);
 
   useSocketListener(socket, SocketChannels.BITCOIN_PRICE_UPDATE, (data) => {
     setBitcoinPrice(data.price);
@@ -57,13 +57,17 @@ export default function Home({ socket }: HomeProps) {
     queryFn: fetchBitcoinPrice,
   });
   const priceToDisplay =
-    bitcoinPrice || (data?.price ? Number(data.price).toFixed(2) : "N/A");
+    bitcoinPrice || (data?.price ? Number(data.price) : "N/A");
 
   const icon = !!error ? (
     <WarningIcon />
   ) : (
     <CheckIcon className="text-green-600" />
   );
+  const tooltipText = !!error
+    ? "Using cached Bitcoin price from local storage. The request to fetch the latest price failed."
+    : "Using the latest Bitcoin price from the server.";
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
@@ -74,24 +78,17 @@ export default function Home({ socket }: HomeProps) {
               <span className="text-gray-600">Loading...</span>
             </Case>
             <Default>
-              <div className="flex flex-row items-center gap-2">
-                <span
-                  className={`text-4xl font-bold ${!!error ? "text-red-600" : "text-green-600"}`}
-                >
-                  ${priceToDisplay}
+              <div
+                className={`flex flex-row items-center gap-2 ${!!error ? "text-red-600" : "text-green-600"}`}
+              >
+                <span className={`text-4xl font-bold `}>
+                  {formatMoneyAmount(priceToDisplay, true, 2)}
                 </span>
-                {!!error ? (
-                  <span className="text-red-600">
-                    <Tooltip
-                      content="Using cached Bitcoin price from local storage. The request to fetch the latest price failed."
-                      position="bottom"
-                    >
-                      {icon}
-                    </Tooltip>
-                  </span>
-                ) : (
-                  <span className="text-green-600">{icon}</span>
-                )}
+                <span>
+                  <Tooltip content={tooltipText} position="bottom">
+                    {icon}
+                  </Tooltip>
+                </span>
               </div>
             </Default>
           </SwitchRender>
@@ -111,11 +108,11 @@ export default function Home({ socket }: HomeProps) {
               value={userValue}
               onChange={(e) => {
                 setUserValue(e.target.value);
-                const { value } = BitcoinService.calculateBitcoinAmount(
+                const result = BitcoinService.calculateBitcoinAmount(
                   Number(e.target.value),
                   bitcoinPrice || data?.price || 0
                 );
-                setBitcoinAmount(value);
+                setBitcoinAmount(result.error ? 0 : result.value);
               }}
               placeholder="Enter USD value"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -126,7 +123,7 @@ export default function Home({ socket }: HomeProps) {
             <div className="mb-4 p-3 bg-gray-50 rounded-md">
               <p className="text-sm text-gray-700">
                 <span className="font-medium">Bitcoin Amount:</span>{" "}
-                {bitcoinAmount} BTC
+                {formatMoneyAmount(bitcoinAmount, false, 8)}
               </p>
             </div>
           )}

@@ -10,6 +10,7 @@ export class BitcoinService {
     }
 
     // Calculate how many bitcoins the value would buy
+
     const bitcoinAmount = Number(value) / currentPrice;
     return { value: bitcoinAmount, error: null };
   }
