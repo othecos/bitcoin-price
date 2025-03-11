@@ -5,7 +5,9 @@ A real-time Bitcoin price tracking application built with Next.js and Express. T
 ## Features
 
 - Real-time Bitcoin price updates using WebSocket
-- Historical price data visualization
+- Animation when the price changes
+- Historical price data visualization with D3.js
+  - Can be seen in a modal or as a flip card
 - Bitcoin/USD calculator
 - Fallback to local storage when offline
 - Comprehensive test coverage
@@ -47,6 +49,14 @@ For the frontend (`apps/frontend/.env`):
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
+4. To be able to have more data in the database, you can change the interval of the price updates in the backend.
+
+```ts
+// apps/backend/src/modules/bitcoin/bitcoin.constants.ts
+// Bitcoin Price Update Interval
+export const BITCOIN_PRICE_UPDATE_INTERVAL = 5 * 1000;
+```
+
 ## Running the Applications
 
 ### Development Mode
@@ -71,55 +81,6 @@ Frontend:
 pnpm --filter frontend dev
 ```
 
-### Running Tests
-
-Run all tests:
-
-```bash
-pnpm test
-```
-
-Run tests for a specific application:
-
-```bash
-pnpm --filter frontend test
-# or
-pnpm --filter backend test
-```
-
-## Docker Support
-
-Build and run using Docker:
-
-Backend:
-
-```bash
-cd apps/backend
-docker build -t bitcoin-price-backend .
-docker run -p 3001:3001 bitcoin-price-backend
-```
-
-Frontend:
-
-```bash
-cd apps/frontend
-docker build -t bitcoin-price-frontend .
-docker run -p 3000:3000 bitcoin-price-frontend
-```
-
-## API Endpoints
-
-### Backend API
-
-- `GET /api/bitcoin/price` - Get the latest Bitcoin price
-- `GET /api/bitcoin/history` - Get historical Bitcoin prices
-  - Query Parameters:
-    - `limit` (optional): Number of historical entries to return (default: 10)
-
-### WebSocket Events
-
-- `bitcoin:price-update` - Real-time price updates
-
 ## Testing
 
 The project includes several types of tests:
@@ -138,6 +99,19 @@ pnpm test
 # Run tests in watch mode
 pnpm test -- --watch
 ```
+
+## API Endpoints
+
+### Backend API
+
+- `GET /api/bitcoin/price` - Get the latest Bitcoin price
+- `GET /api/bitcoin/history` - Get historical Bitcoin prices
+  - Query Parameters:
+    - `limit` (optional): Number of historical entries to return (default: 10)
+
+### WebSocket Events
+
+- `bitcoin:price-update` - Real-time price updates
 
 ## Tech Stack
 

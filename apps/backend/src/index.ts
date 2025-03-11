@@ -5,8 +5,8 @@ import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 import { AppDataSource } from "./data-source";
-import { createBitcoinRoutes } from "./modules/bitcon/bitcoin.routes";
-import { BitcoinFactory } from "./modules/bitcon/bitcoin.factory";
+import { createBitcoinRoutes } from "./modules/bitcoin/bitcoin.routes";
+import { BitcoinFactory } from "./modules/bitcoin/bitcoin.factory";
 import { BitcoinPrice } from "./entities/BitcoinPrice";
 
 // Load environment variables
